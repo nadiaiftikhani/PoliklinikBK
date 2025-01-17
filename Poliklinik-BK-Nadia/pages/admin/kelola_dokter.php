@@ -138,7 +138,7 @@ if (isset($_POST["submit"])) {
                                 <td class="py-5 text-center">
                                     <?= $item["nama_poli"] ?>
                                 </td>
-                                <td class="py-5 text-center">
+                                <td class="p-5 flex text-center">
                                     <a href="edit_dokter.php?id=<?= $item["id"] ?>" class="bg-green-500 px-6 py-2 rounded-lg text-white mr-3 hover:bg-green-600">
                                         Edit
                                     </a>

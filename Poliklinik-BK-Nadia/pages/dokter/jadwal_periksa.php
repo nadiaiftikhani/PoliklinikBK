@@ -1,9 +1,9 @@
-<?php 
+<?php
 session_start();
 
 $username = $_SESSION["username"];
 
-if(!isset($_SESSION["login"])){
+if (!isset($_SESSION["login"])) {
     header("Location: ../../index.php");
     exit;
 }
@@ -11,47 +11,60 @@ if(!isset($_SESSION["login"])){
 require '../../functions/connect_database.php';
 require '../../functions/dokter_functions.php';
 
-//Menggunakan Query SQL untuk Mengambil id_dokter
-$query_id = "SELECT id FROM dokter WHERE username = '$username'";
-$result_id = mysqli_query($conn, $query_id);
-
-//Eksekusi Query dan Mendapatkan Hasil
-if ($row = mysqli_fetch_assoc($result_id)) {
-    $id_dokter = $row['id'];
-}
-
-$query_nama = "SELECT nama FROM dokter WHERE username = '$username'";
-$result_nama = mysqli_query($conn, $query_nama);
-
-if ($row = mysqli_fetch_assoc($result_nama)) {
-    $nama_dokter = $row['nama'];
-}
+$nama_dokter = $_SESSION['username'];
+$id_dokter = $_SESSION['id'];
 
 // Ambil data dari tabel poli
-$jadwal_periksa = query("SELECT * FROM jadwal_periksa WHERE id_dokter = $id_dokter");
+$stmt = $conn->prepare("SELECT * FROM jadwal_periksa WHERE id_dokter = ?");
+$stmt->bind_param("i", $id_dokter);
+$stmt->execute();
+$result = $stmt->get_result();
+$jadwal_periksa = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $jadwal_periksa[] = $row;
+    }
+}
+$stmt->close();
 
 // Cek apakah tombol submit sudah ditekan atau belum
-if (isset($_POST["submit"])){
-    // Cek apakah data berhasil ditambahkan atau tidak
-    if(tambah_jadwal($_POST) > 0){
+if (isset($_POST["submit"])) {
+    $hari = $_POST['hari'] ?? '';
+    $jam_mulai = $_POST['jam_mulai'] ?? '';
+    $jam_selesai = $_POST['jam_selesai'] ?? '';
+
+    // Validasi input
+    if (!empty($hari) && !empty($jam_mulai) && !empty($jam_selesai)) {
+        $stmt = $conn->prepare("INSERT INTO jadwal_periksa (id_dokter, hari, jam_mulai, jam_selesai) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("isss", $id_dokter, $hari, $jam_mulai, $jam_selesai);
+
+        if ($stmt->execute()) {
+            echo "
+                <script>
+                    alert('Data berhasil ditambahkan!');
+                    document.location.href = 'jadwal_periksa.php';
+                </script>
+            ";
+        } else {
+            echo "
+                <script>
+                    alert('Data gagal ditambahkan!');
+                    document.location.href = 'jadwal_periksa.php';
+                </script>
+            ";
+        }
+        $stmt->close();
+    } else {
         echo "
             <script>
-                alert('Data berhasil ditambahkan!');
+                alert('Semua data harus diisi!');
                 document.location.href = 'jadwal_periksa.php';
             </script>
         ";
-        header("Location: jadwal_periksa.php");
-    } else{
-        echo "
-             <script>
-                alert('Data gagal ditambahkan!');
-                document.location.href = 'jadwal_periksa.php';
-            </script>
-        ";
-        header("Location: jadwal_periksa.php");
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -66,19 +79,24 @@ if (isset($_POST["submit"])){
         body {
             background: linear-gradient(to right, #E0F7FA, #BBDEFB);
         }
+
         header {
             background-color: #B3E5FC;
             color: #01579B;
         }
+
         main {
             background-color: #E3F2FD;
         }
+
         .form-section {
             background-color: #E1F5FE;
         }
+
         table th {
             background-color: #81D4FA;
         }
+
         table td {
             background-color: #E1F5FE;
         }
@@ -141,29 +159,29 @@ if (isset($_POST["submit"])){
 
                     <tbody>
                         <?php $index = 1; ?>
-                        <?php foreach($jadwal_periksa as $item) : ?>
-                        <tr>
-                            <td class="border border-slate-500 py-5 text-center">
-                                <?= $index  ?>
-                            </td>
-                            <td class="border border-slate-500 py-5 text-center">
-                                <?= $nama_dokter ?>
-                            </td>
-                            <td class="border border-slate-500 py-5 text-center">
-                                <?= $item["hari"] ?>
-                            </td>
-                            <td class="border border-slate-500 py-5 text-center">
-                                <?= $item["jam_mulai"] ?>
-                            </td>
-                            <td class="border border-slate-500 py-5 text-center">
-                                <?= $item["jam_selesai"] ?>
-                            </td>
-                            <td class="border border-slate-500 py-5 text-center">
-                                <a href="edit_jadwal_periksa.php?id=<?= $item["id"] ?>" class="bg-green-500 px-6 py-2 rounded-lg text-white mr-3">Edit</a>
-                                <a href="hapus_jadwal_periksa.php?id=<?= $item["id"] ?>" class="bg-red-500 px-6 py-2 rounded-lg text-white">Delete</a>
-                            </td>
-                        </tr>
-                        <?php $index++ ?>
+                        <?php foreach ($jadwal_periksa as $item) : ?>
+                            <tr>
+                                <td class="border border-slate-500 py-5 text-center">
+                                    <?= $index  ?>
+                                </td>
+                                <td class="border border-slate-500 py-5 text-center">
+                                    <?= $nama_dokter ?>
+                                </td>
+                                <td class="border border-slate-500 py-5 text-center">
+                                    <?= $item["hari"] ?>
+                                </td>
+                                <td class="border border-slate-500 py-5 text-center">
+                                    <?= $item["jam_mulai"] ?>
+                                </td>
+                                <td class="border border-slate-500 py-5 text-center">
+                                    <?= $item["jam_selesai"] ?>
+                                </td>
+                                <td class="border border-slate-500 py-5 text-center">
+                                    <a href="edit_jadwal_periksa.php?id=<?= $item["id"] ?>" class="bg-green-500 px-6 py-2 rounded-lg text-white mr-3">Edit</a>
+                                    <a href="hapus_jadwal_periksa.php?id=<?= $item["id"] ?>" class="bg-red-500 px-6 py-2 rounded-lg text-white">Delete</a>
+                                </td>
+                            </tr>
+                            <?php $index++ ?>
                         <?php endforeach; ?>
                     </tbody>
                 </table>

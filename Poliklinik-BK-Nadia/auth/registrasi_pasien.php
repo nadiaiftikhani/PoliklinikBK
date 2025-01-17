@@ -1,21 +1,21 @@
-<?php 
+<?php
 session_start();
 
 require '../functions/connect_database.php';
 require '../functions/pasien_functions.php';
 
-if(isset($_POST["register"])){
-    if(registrasi($_POST) > 0){
+if (isset($_POST["register"])) {
+    if (registrasi($_POST) > 0) {
         $username = $_POST["username"];
 
         $_SESSION["login"] = "true";
         $_SESSION["username"] = $username;
-        
+
         echo "<script>
         alert('User baru berhasil ditambahkan!');
         </script>";
         header("Location: ../pages/pasien/dashboard_pasien.php?username=$username");
-    } else{
+    } else {
         echo mysqli_error($conn);
     }
 }
@@ -57,8 +57,21 @@ if(isset($_POST["register"])){
                 class="bg-blue-50 px-5 py-3 outline-none rounded-lg border-2 border-blue-300 focus:ring-2 focus:ring-blue-400">
             <input type="hidden" name="role" value="pasien">
 
+            <select id="id_dokter" name="id_dokter" class="bg-blue-50 px-5 py-3 outline-none rounded-lg border-2 border-blue-300 focus:ring-2 focus:ring-blue-400">
+                <?php
+                $query = "SELECT * FROM dokter";
+                $result = mysqli_query($conn, $query);
+                
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $id_dokter = $row["id"];
+                    $dokter = $row["username"];
+                    echo "<option value='$id_dokter'>$dokter</option>";
+                }
+                ?>
+            </select>
+
             <button type="submit" name="register"
-                class="mt-3 bg-gradient-to-r from-blue-400 to-blue-600 text-white py-3 font-medium rounded-lg hover:bg-blue-700 transition-all duration-300">Register</button>
+                class=" bg-gradient-to-r from-blue-400 to-blue-600 text-white py-3 font-medium rounded-lg hover:bg-blue-700 transition-all duration-300">Register</button>
 
             <div class="flex justify-center gap-2 mt-4">
                 <h1 class="text-blue-600">Sudah punya akun?</h1>

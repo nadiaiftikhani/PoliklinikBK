@@ -1,57 +1,68 @@
 <?php
 session_start();
-
-$id_daftar_poli = $_GET["id"];
+require '../../functions/connect_database.php';
+require '../../functions/dokter_functions.php';
 
 if (!isset($_SESSION["login"])) {
     header("Location: ../../index.php");
     exit;
 }
 
-require '../../functions/connect_database.php';
-require '../../functions/dokter_functions.php';
+$id_daftar_poli = $_GET["id"];
 
 // Ambil data dari tabel daftar_poli dengan JOIN ke tabel pasien dan jadwal_periksa
-$data_pasien = query("SELECT *
-                      FROM daftar_poli
-                      JOIN pasien ON daftar_poli.id_pasien = pasien.id
-                      JOIN jadwal_periksa ON daftar_poli.id_jadwal = jadwal_periksa.id
-                      WHERE daftar_poli.id = $id_daftar_poli;
-                    ")[0];
+$query = "SELECT * 
+          FROM daftar_poli 
+          JOIN pasien ON daftar_poli.id_pasien = pasien.id 
+          JOIN jadwal_periksa ON daftar_poli.id_jadwal = jadwal_periksa.id 
+          WHERE daftar_poli.id = $id_daftar_poli";
+
+$result = mysqli_query($conn, $query);
+if (!$result) {
+    die("Query Error: " . mysqli_error($conn));
+}
+$data_pasien = mysqli_fetch_assoc($result);
 
 // Ambil data dari tabel obat
-$obat = query("SELECT * FROM obat");
-
-$periksa = query("select * from periksa where id_daftar_poli = $id_daftar_poli order by id desc")[0];
-// var_dump($periksa);
-$id_periksa = $periksa['id'];
-$getObat = query("select * from detail_periksa where id_periksa = $id_periksa");
-$id_selected_obat = [];
-foreach ($getObat as $key => $value) {
-    array_push($id_selected_obat, $value['id_obat']);
+$query_obat = "SELECT * FROM obat";
+$result_obat = mysqli_query($conn, $query_obat);
+if (!$result_obat) {
+    die("Query Error: " . mysqli_error($conn));
 }
-// var_dump($id_selected_obat);
+$obat = mysqli_fetch_all($result_obat, MYSQLI_ASSOC);
+
+// Ambil data dari tabel periksa
+$query_periksa = "SELECT * FROM periksa WHERE id_daftar_poli = $id_daftar_poli ORDER BY id DESC";
+$result_periksa = mysqli_query($conn, $query_periksa);
+if (!$result_periksa) {
+    die("Query Error: " . mysqli_error($conn));
+}
+$periksa = mysqli_fetch_assoc($result_periksa);
+$id_periksa = $periksa['id'] ?? null;
+
+// Ambil data dari detail_periksa
+$id_selected_obat = [];
+if ($id_periksa) {
+    $query_detail_periksa = "SELECT * FROM detail_periksa WHERE id_periksa = $id_periksa";
+    $result_detail_periksa = mysqli_query($conn, $query_detail_periksa);
+    if (!$result_detail_periksa) {
+        die("Query Error: " . mysqli_error($conn));
+    }
+    while ($row = mysqli_fetch_assoc($result_detail_periksa)) {
+        array_push($id_selected_obat, $row['id_obat']);
+    }
+}
 
 // Cek apakah tombol submit sudah ditekan atau belum
 if (isset($_POST["submit"])) {
-    // Cek apakah data berhasil ditambahkan atau tidak
     if (tambah_periksa_pasien($_POST) > 0) {
-        echo "
-            <script>
-                alert('Data berhasil ditambahkan!');
-            </script>
-        ";
-        header("Location: memeriksa_pasien.php");
+        echo "<script>alert('Data berhasil ditambahkan!'); window.location.href = 'memeriksa_pasien.php';</script>";
     } else {
-        echo "
-             <script>
-                alert('Data gagal ditambahkan!');
-            </script>
-        ";
-        header("Location: memeriksa_pasien.php");
+        echo "<script>alert('Data gagal ditambahkan!'); window.location.href = 'memeriksa_pasien.php';</script>";
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -106,7 +117,7 @@ if (isset($_POST["submit"])) {
                     <label for="harga" class="text-lg font-medium">Obat</label>
                     <select id="id_obat" name="id_obat" class="px-4 py-3 outline-none rounded-lg border border-gray-300">
                         <?php foreach ($obat as $item) : ?>
-                        <option value="<?= $item["id"] ?>"><?= $item["nama_obat"] ?> - <?= $item["harga"] ?></option>
+                            <option value="<?= $item["id"] ?>"><?= $item["nama_obat"] ?> - <?= $item["harga"] ?></option>
                         <?php endforeach; ?>
                     </select>
                     <button type="button" id="buttonAddObat" class="btn btn-outline-primary btn-primary" style="width: 150px"><i class="mdi mdi-plus me-2"></i>Tambah</button>

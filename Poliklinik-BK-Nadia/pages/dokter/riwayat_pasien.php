@@ -13,6 +13,8 @@ require '../../functions/dokter_functions.php';
 $data_periksa = query("SELECT *
                       FROM daftar_poli
                       JOIN pasien ON daftar_poli.id_pasien = pasien.id
+                      JOIN jadwal_periksa ON daftar_poli.id_jadwal = jadwal_periksa.id
+                      WHERE jadwal_periksa.id_dokter = " . $_SESSION["id"] . "
                     ");
 
 // Cek apakah tombol submit sudah ditekan atau belum

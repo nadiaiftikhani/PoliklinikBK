@@ -12,7 +12,9 @@ require '../../functions/dokter_functions.php';
 // Ambil data dari tabel daftar_poli dengan JOIN ke tabel pasien
 $query = "SELECT daftar_poli.*, pasien.nama, daftar_poli.id as id_periksa
           FROM daftar_poli
-          JOIN pasien ON daftar_poli.id_pasien = pasien.id";
+          JOIN jadwal_periksa ON daftar_poli.id_jadwal = jadwal_periksa.id
+          JOIN pasien ON daftar_poli.id_pasien = pasien.id
+          WHERE jadwal_periksa.id_dokter = " . $_SESSION["id"];
 
 $daftar_poli = mysqli_query($conn, $query);
 

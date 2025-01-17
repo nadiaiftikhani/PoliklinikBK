@@ -1,10 +1,10 @@
 <?php
 session_start();
 
-if (isset($_SESSION["login"])) {
-    header("Location: ../index.php");
-    exit;
-}
+// if (isset($_SESSION["login"])) {
+//     header("Location: ../index.php");
+//     exit;
+// }
 
 require '../functions/connect_database.php';
 
@@ -12,28 +12,18 @@ if (isset($_POST["login"])) {
     $username = $_POST["username"];
     $password = $_POST["password"];
 
-    $result = mysqli_query($conn, "SELECT * FROM dokter WHERE username = '$username'"); // Cek di database apakah ada username yg cocok atau tidak
-    $result_admin = mysqli_query($conn, "SELECT * FROM users WHERE username = '$username'"); 
+ 
+    $result_admin = mysqli_query($conn, "SELECT * FROM dokter WHERE username = '$username'"); 
     // Cek username
-    if (mysqli_num_rows($result) === 1) { //cek ada berapa baris yang ditemukan (pasti 1)
-        // Cek Password
-        $row = mysqli_fetch_assoc($result);
-        if ($password === $row["password"]) {
-            // Set Session
-            $_SESSION["login"] = "true";
-            $_SESSION["username"] = $username;
-            header("Location: ../pages/dokter/dashboard_dokter.php?username=$username");
-            exit;
-        }
-    }
-
     if (mysqli_num_rows($result_admin) === 1) { //cek ada berapa baris yang ditemukan (pasti 1)
+        // Cek Password
         $row = mysqli_fetch_assoc($result_admin);
         if ($password === $row["password"]) {
             // Set Session
             $_SESSION["login"] = "true";
             $_SESSION["username"] = $username;
-            header("Location: ../pages/admin/dashboard_admin.php?username=$username");
+            $_SESSION["id"] = $row["id"];
+            header("Location: ../pages/dokter/dashboard_dokter.php?username=$username");
             exit;
         }
     }

@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Jan 26, 2024 at 11:43 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Host: localhost:3306
+-- Generation Time: Jan 16, 2025 at 09:05 AM
+-- Server version: 8.0.30
+-- PHP Version: 8.1.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -28,12 +28,12 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `daftar_poli` (
-  `id` int(11) UNSIGNED NOT NULL,
-  `id_pasien` int(11) UNSIGNED NOT NULL,
-  `id_jadwal` int(11) UNSIGNED NOT NULL,
-  `keluhan` text NOT NULL,
-  `no_antrian` int(11) UNSIGNED NOT NULL,
-  `status_periksa` enum('Menunggu','Selesai','','') NOT NULL
+  `id` int UNSIGNED NOT NULL,
+  `id_pasien` int UNSIGNED NOT NULL,
+  `id_jadwal` int UNSIGNED NOT NULL,
+  `keluhan` text COLLATE utf8mb4_general_ci NOT NULL,
+  `no_antrian` int UNSIGNED NOT NULL,
+  `status_periksa` enum('Menunggu','Selesai','','') COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -51,9 +51,9 @@ INSERT INTO `daftar_poli` (`id`, `id_pasien`, `id_jadwal`, `keluhan`, `no_antria
 --
 
 CREATE TABLE `detail_periksa` (
-  `id` int(11) UNSIGNED NOT NULL,
-  `id_periksa` int(11) UNSIGNED NOT NULL,
-  `id_obat` int(11) UNSIGNED NOT NULL
+  `id` int UNSIGNED NOT NULL,
+  `id_periksa` int UNSIGNED NOT NULL,
+  `id_obat` int UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -63,13 +63,13 @@ CREATE TABLE `detail_periksa` (
 --
 
 CREATE TABLE `dokter` (
-  `id` int(11) UNSIGNED NOT NULL,
-  `username` varchar(50) NOT NULL,
-  `password` varchar(20) NOT NULL,
-  `nama` varchar(255) NOT NULL,
-  `alamat` varchar(255) NOT NULL,
-  `no_hp` varchar(50) NOT NULL,
-  `id_poli` int(11) UNSIGNED NOT NULL
+  `id` int UNSIGNED NOT NULL,
+  `username` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `nama` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `alamat` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `no_hp` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `id_poli` int UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -88,9 +88,9 @@ INSERT INTO `dokter` (`id`, `username`, `password`, `nama`, `alamat`, `no_hp`, `
 --
 
 CREATE TABLE `jadwal_periksa` (
-  `id` int(10) UNSIGNED NOT NULL,
-  `id_dokter` int(10) UNSIGNED NOT NULL,
-  `hari` enum('Senin','Selasa','Rabu','Kamis','Jumat','Sabtu') NOT NULL,
+  `id` int UNSIGNED NOT NULL,
+  `id_dokter` int UNSIGNED NOT NULL,
+  `hari` enum('Senin','Selasa','Rabu','Kamis','Jumat','Sabtu') COLLATE utf8mb4_general_ci NOT NULL,
   `jam_mulai` time NOT NULL,
   `jam_selesai` time NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -106,7 +106,8 @@ INSERT INTO `jadwal_periksa` (`id`, `id_dokter`, `hari`, `jam_mulai`, `jam_seles
 (9, 2, 'Rabu', '12:00:00', '13:00:00'),
 (10, 2, 'Senin', '20:00:00', '21:00:00'),
 (11, 6, 'Kamis', '09:00:00', '11:00:00'),
-(12, 6, 'Rabu', '13:00:00', '14:00:00');
+(12, 6, 'Rabu', '13:00:00', '14:00:00'),
+(14, 3, 'Rabu', '14:30:00', '20:25:00');
 
 -- --------------------------------------------------------
 
@@ -115,10 +116,10 @@ INSERT INTO `jadwal_periksa` (`id`, `id_dokter`, `hari`, `jam_mulai`, `jam_seles
 --
 
 CREATE TABLE `obat` (
-  `id` int(11) UNSIGNED NOT NULL,
-  `nama_obat` varchar(50) NOT NULL,
-  `kemasan` varchar(35) NOT NULL,
-  `harga` int(11) NOT NULL
+  `id` int UNSIGNED NOT NULL,
+  `nama_obat` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `kemasan` varchar(35) COLLATE utf8mb4_general_ci NOT NULL,
+  `harga` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -138,23 +139,25 @@ INSERT INTO `obat` (`id`, `nama_obat`, `kemasan`, `harga`) VALUES
 --
 
 CREATE TABLE `pasien` (
-  `id` int(11) UNSIGNED NOT NULL,
-  `username` varchar(50) NOT NULL,
-  `password` varchar(20) NOT NULL,
-  `nama` varchar(255) NOT NULL,
-  `alamat` varchar(255) NOT NULL,
-  `no_ktp` varchar(255) NOT NULL,
-  `no_hp` varchar(50) NOT NULL,
-  `no_rm` varchar(25) NOT NULL
+  `id` int UNSIGNED NOT NULL,
+  `username` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `nama` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `alamat` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `no_ktp` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `no_hp` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `no_rm` varchar(25) COLLATE utf8mb4_general_ci NOT NULL,
+  `id_dokter` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `pasien`
 --
 
-INSERT INTO `pasien` (`id`, `username`, `password`, `nama`, `alamat`, `no_ktp`, `no_hp`, `no_rm`) VALUES
-(18, 'buzz', '123', 'Buzz', 'New York', '84520828', '08123456789', '202312-1'),
-(24, 'sid', '123', 'Sid', 'Los Angeles', '84520828', '08123456789', '202312-2');
+INSERT INTO `pasien` (`id`, `username`, `password`, `nama`, `alamat`, `no_ktp`, `no_hp`, `no_rm`, `id_dokter`) VALUES
+(18, 'buzz', '123', 'Buzz', 'New York', '84520828', '08123456789', '202312-1', 3),
+(24, 'sid', '123', 'Sid', 'Los Angeles', '84520828', '08123456789', '202312-2', 5),
+(25, 'hendra', '123', 'Hendra', 'asa', '12415325125', '3125515316', '202501-1', 3);
 
 -- --------------------------------------------------------
 
@@ -163,11 +166,11 @@ INSERT INTO `pasien` (`id`, `username`, `password`, `nama`, `alamat`, `no_ktp`, 
 --
 
 CREATE TABLE `periksa` (
-  `id` int(11) UNSIGNED NOT NULL,
-  `id_daftar_poli` int(11) UNSIGNED NOT NULL,
-  `tgl_periksa` varchar(255) NOT NULL,
-  `catatan` text NOT NULL,
-  `biaya_periksa` int(11) NOT NULL
+  `id` int UNSIGNED NOT NULL,
+  `id_daftar_poli` int UNSIGNED NOT NULL,
+  `tgl_periksa` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `catatan` text COLLATE utf8mb4_general_ci NOT NULL,
+  `biaya_periksa` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -185,9 +188,9 @@ INSERT INTO `periksa` (`id`, `id_daftar_poli`, `tgl_periksa`, `catatan`, `biaya_
 --
 
 CREATE TABLE `poli` (
-  `id` int(10) UNSIGNED NOT NULL,
-  `nama_poli` varchar(25) NOT NULL,
-  `keterangan` text NOT NULL
+  `id` int UNSIGNED NOT NULL,
+  `nama_poli` varchar(25) COLLATE utf8mb4_general_ci NOT NULL,
+  `keterangan` text COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -205,10 +208,10 @@ INSERT INTO `poli` (`id`, `nama_poli`, `keterangan`) VALUES
 --
 
 CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
-  `username` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `role` enum('pasien','dokter','admin','') NOT NULL
+  `id` int NOT NULL,
+  `username` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `role` enum('pasien','dokter','admin','') COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -220,7 +223,7 @@ INSERT INTO `users` (`id`, `username`, `password`, `role`) VALUES
 (2, 'pasien1', '123', 'pasien'),
 (3, 'dokter1', '123', 'dokter'),
 (4, 'pasien2', '123', ''),
-(5, 'dokter2', '123', '');
+(5, 'dokter2', '123', 'dokter');
 
 --
 -- Indexes for dumped tables
@@ -295,55 +298,55 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `daftar_poli`
 --
 ALTER TABLE `daftar_poli`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `detail_periksa`
 --
 ALTER TABLE `detail_periksa`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `dokter`
 --
 ALTER TABLE `dokter`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `jadwal_periksa`
 --
 ALTER TABLE `jadwal_periksa`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `obat`
 --
 ALTER TABLE `obat`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `pasien`
 --
 ALTER TABLE `pasien`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `periksa`
 --
 ALTER TABLE `periksa`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `poli`
 --
 ALTER TABLE `poli`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables

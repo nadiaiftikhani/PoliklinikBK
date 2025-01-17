@@ -13,6 +13,7 @@ require '../../functions/admin_functions.php';
 
 // Ambil data dari tabel poli
 $poli = query("SELECT * FROM poli");
+// $dokter = query("SELECT * FROM dokter");
 
 // Memeriksa apakah tombol submit sudah ditekan atau belum dan melakukan aksi
 if (isset($_POST["submit"])) {
@@ -62,7 +63,7 @@ if (isset($_POST["submit"])) {
                 <!-- Input Nomor Rekam Medis -->
                 <div class="flex flex-col gap-3">
                     <label for="no_rm" class="text-lg font-medium text-[#1F618D]">Nomor Rekam Medis</label>
-                    <input type="text" name="no_rm" id="no_rm" placeholder="Masukkan Nomor Rekam Medis"
+                    <input type="text" name="no_rm" readonly id="no_rm" value="<?= $_SESSION['no_rm']; ?>" placeholder="Masukkan Nomor Rekam Medis"
                         class="px-4 py-3 outline-none rounded-lg border border-[#85C1E9]">
                 </div>
 

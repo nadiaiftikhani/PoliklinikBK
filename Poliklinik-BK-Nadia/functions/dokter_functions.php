@@ -27,24 +27,27 @@ function hapus_jadwal($id){
 }
 
 // Fungsi Edit Jadwal Periksa
-function edit($data_form){
+function edit($id, $hari, $jam_mulai, $jam_selesai)
+{
     global $conn;
 
-    echo "asd";
-    die();
+    $id = intval($id);
+    $hari = mysqli_real_escape_string($conn, htmlspecialchars($hari));
+    $jam_mulai = mysqli_real_escape_string($conn, htmlspecialchars($jam_mulai));
+    $jam_selesai = mysqli_real_escape_string($conn, htmlspecialchars($jam_selesai));
 
-    // Ambil data dari tiap elemen dalam form
-    $id = $data_form["id"]; 
-    $hari = htmlspecialchars($data_form["hari"]);
-    $jam_mulai = htmlspecialchars($data_form["jam_mulai"]);
-    $jam_selesai = htmlspecialchars($data_form["jam_selesai"]);
+    $query = "
+        UPDATE jadwal_periksa 
+        SET hari = '$hari', jam_mulai = '$jam_mulai', jam_selesai = '$jam_selesai' 
+        WHERE id = $id
+    ";
 
-    // Query insert data
-    $query = "UPDATE jadwal_periksa SET hari = '$hari', jam_mulai = '$jam_mulai', jam_selesai = '$jam_selesai' WHERE id = $id";
     mysqli_query($conn, $query);
 
     return mysqli_affected_rows($conn);
 }
+
+
 // ==================== Fungsi Jadwal Periksa End ====================
 
 // Fungsi Create Periksa Pasien
@@ -63,7 +66,7 @@ function tambah_periksa_pasien($data_form){
     $biaya_periksa = htmlspecialchars($data_form["biaya_periksa"]) + 150000;
 
     // Query insert data
-    $query1 = "INSERT INTO periksa VALUES ('', '$id_daftar_poli', '$hari', '$catatan', '$biaya_periksa')";
+    $query1 = "INSERT INTO periksa(id_daftar_poli,tgl_periksa,catatan,biaya_periksa) VALUES ('$id_daftar_poli', '$hari', '$catatan', '$biaya_periksa')";
     $periksa = mysqli_query($conn, $query1);
     $id_periksa = mysqli_insert_id($conn);
 

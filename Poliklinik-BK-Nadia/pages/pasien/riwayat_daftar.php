@@ -65,11 +65,44 @@ if(isset($_POST["poli"])){
                 <table class="w-full table-fixed border border-blue-500">
                        <thead>
                            <tr>
-                               <th class="border border-slate-500 py-3">No</th>
-                               <th class="border border-slate-500 py-3">id Poli</th>
-                               <th class="border border-slate-500 py-3">id obat</th>
+                               <th class="border border-slate-500 py-3">No RM</th>
+                               <th class="border border-slate-500 py-3">Nama Pasien</th>
+                               <th class="border border-slate-500 py-3">Poli</th>
+                               <th class="border border-slate-500 py-3">Nama Dokter</th>
+                               <th class="border border-slate-500 py-3">Keluhan</th>
                            </tr>
                        </thead>
+                          <tbody>
+                            <?php
+                            $data_poli = query("
+                                            SELECT 
+                                                p.no_rm, 
+                                                p.nama AS nama_pasien, 
+                                                po.nama_poli, 
+                                                d.nama AS nama_dokter, 
+                                                dp.keluhan
+                                            FROM daftar_poli dp
+                                            JOIN pasien p ON dp.id_pasien = p.id
+                                            JOIN jadwal_periksa jp ON dp.id_jadwal = jp.id
+                                            JOIN dokter d ON jp.id_dokter = d.id
+                                            JOIN poli po ON d.id_poli = po.id
+                                            WHERE dp.id_pasien = '$_SESSION[id]'
+                                        ");
+                            $no = 1;
+                            foreach ($data_poli as $data) :
+                            ?>
+                                 <tr>
+                                      <td class="border border-slate-500 py-3"><?= $data["no_rm"]; ?></td>
+                                      <td class="border border-slate-500 py-3"><?= $data["nama_pasien"]; ?></td>
+                                      <td class="border border-slate-500 py-3"><?= $data["nama_poli"]; ?></td>
+                                      <td class="border border-slate-500 py-3"><?= $data["nama_dokter"]; ?></td>
+                                      <td class="border border-slate-500 py-3"><?= $data["keluhan"]; ?></td>
+                                 </tr>
+                            <?php
+                                 $no++;
+                            endforeach;
+                            ?> 
+                            </tbody>
                    </table>
             </div>
         </article>

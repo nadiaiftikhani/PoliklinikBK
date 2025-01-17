@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if(!isset($_SESSION["login"])){
+if (!isset($_SESSION["login"])) {
     header("Location: ../../index.php");
     exit;
 }
@@ -13,7 +13,8 @@ require '../../functions/admin_functions.php';
 $pasien = query("SELECT * FROM pasien");
 
 // Fungsi untuk mendapatkan nomor RM terakhir
-function getLatestRMNumber() {
+function getLatestRMNumber()
+{
     global $conn;
 
     $query = "SELECT no_rm FROM pasien ORDER BY no_rm DESC LIMIT 1";
@@ -27,7 +28,8 @@ function getLatestRMNumber() {
 }
 
 // Fungsi untuk menghasilkan nomor RM baru
-function generateNewRMNumber($latestRM) {
+function generateNewRMNumber($latestRM)
+{
     // Pisahkan tahun dan nomor urut
     list($tahun, $nomorUrut) = explode('-', $latestRM);
 
@@ -52,16 +54,16 @@ if (!$latestRM) {
 $newRMNumber = generateNewRMNumber($latestRM);
 
 // Cek apakah tombol submit sudah ditekan atau belum
-if (isset($_POST["submit"])){
+if (isset($_POST["submit"])) {
     // Cek apakah data berhasil ditambahkan atau tidak
-    if(tambah_pasien($_POST) > 0){
+    if (tambah_pasien($_POST) > 0) {
         echo "
             <script>
                 alert('Data berhasil ditambahkan!');
             </script>
         ";
         header("Location: kelola_pasien.php");
-    } else{
+    } else {
         echo "
              <script>
                 alert('Data gagal ditambahkan!');
@@ -86,10 +88,12 @@ if (isset($_POST["submit"])){
             background: linear-gradient(to right, #A2C8FF, #89CFF0);
             font-family: 'Arial', sans-serif;
         }
+
         .container {
             display: flex;
             gap: 2rem;
         }
+
         .main-content {
             width: 100%;
             padding: 2rem;
@@ -97,6 +101,7 @@ if (isset($_POST["submit"])){
             border-radius: 1rem;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
+
         .form-container {
             display: flex;
             flex-direction: column;
@@ -105,20 +110,25 @@ if (isset($_POST["submit"])){
             padding: 2rem;
             border-radius: 1rem;
         }
-        .form-container input, .form-container button {
+
+        .form-container input,
+        .form-container button {
             padding: 0.8rem;
             border-radius: 0.5rem;
             border: 1px solid #ccc;
         }
+
         .form-container button {
             background-color: #004079;
             color: white;
             cursor: pointer;
             transition: background-color 0.3s;
         }
+
         .form-container button:hover {
             background-color: #002f5b;
         }
+
         .table-container {
             margin-top: 2rem;
             padding: 2rem;
@@ -126,19 +136,24 @@ if (isset($_POST["submit"])){
             background-color: #fff;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             text-align: center;
         }
-        th, td {
+
+        th,
+        td {
             padding: 1rem;
             border: 1px solid #ddd;
         }
+
         th {
             background-color: #004079;
             color: white;
         }
+
         .actions a {
             margin: 0.5rem;
             padding: 0.5rem 1rem;
@@ -146,9 +161,11 @@ if (isset($_POST["submit"])){
             color: white;
             border-radius: 0.5rem;
         }
+
         .actions .edit {
             background-color: #28a745;
         }
+
         .actions .delete {
             background-color: #dc3545;
         }
@@ -174,6 +191,10 @@ if (isset($_POST["submit"])){
                         <label for="nama" class="text-lg font-medium">Nama Pasien</label>
                         <input type="text" name="nama" id="nama" placeholder="Nama Pasien">
                     </div>
+                    <div class="flex flex-col gap-3">
+                        <label for="nama" class="text-lg font-medium">Password</label>
+                        <input type="text" name="password" id="nama" placeholder="Password">
+                    </div>
 
                     <div class="flex flex-col gap-3">
                         <label for="alamat" class="text-lg font-medium">Alamat</label>
@@ -194,7 +215,18 @@ if (isset($_POST["submit"])){
                         <label for="no_rm" class="text-lg font-medium">Nomor RM</label>
                         <input type="text" name="no_rm" value="<?php echo $newRMNumber; ?>" id="no_rm" readonly placeholder="Nomor RM">
                     </div>
+                    <select id="id_dokter" name="id_dokter" class="bg-blue-50 px-5 py-3 outline-none rounded-lg border-2 border-blue-300 focus:ring-2 focus:ring-blue-400">
+                        <?php
+                        $query = "SELECT * FROM dokter";
+                        $result = mysqli_query($conn, $query);
 
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            $id_dokter = $row["id"];
+                            $dokter = $row["username"];
+                            echo "<option value='$id_dokter'>$dokter</option>";
+                        }
+                        ?>
+                    </select>
                     <button type="submit" name="submit">Tambah Data</button>
                 </form>
 
@@ -215,20 +247,20 @@ if (isset($_POST["submit"])){
 
                         <tbody>
                             <?php $index = 1; ?>
-                            <?php foreach($pasien as $item) : ?>
-                            <tr>
-                                <td><?= $index ?></td>
-                                <td><?= $item["nama"] ?></td>
-                                <td><?= $item["alamat"] ?></td>
-                                <td><?= $item["no_ktp"] ?></td>
-                                <td><?= $item["no_hp"] ?></td>
-                                <td><?= $item["no_rm"] ?></td>
-                                <td class="actions">
-                                    <a href="edit_pasien.php?id=<?= $item["id"] ?>" class="edit">Edit</a>
-                                    <a href="hapus_pasien.php?id=<?= $item["id"] ?>" class="delete">Delete</a>
-                                </td>
-                            </tr>
-                            <?php $index++ ?>
+                            <?php foreach ($pasien as $item) : ?>
+                                <tr>
+                                    <td><?= $index ?></td>
+                                    <td><?= $item["nama"] ?></td>
+                                    <td><?= $item["alamat"] ?></td>
+                                    <td><?= $item["no_ktp"] ?></td>
+                                    <td><?= $item["no_hp"] ?></td>
+                                    <td><?= $item["no_rm"] ?></td>
+                                    <td class="actions">
+                                        <a href="edit_pasien.php?id=<?= $item["id"] ?>" class="edit">Edit</a>
+                                        <a href="hapus_pasien.php?id=<?= $item["id"] ?>" class="delete">Delete</a>
+                                    </td>
+                                </tr>
+                                <?php $index++ ?>
                             <?php endforeach; ?>
                         </tbody>
                     </table>

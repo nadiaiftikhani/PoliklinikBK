@@ -1,10 +1,10 @@
 <?php
 session_start();
 
-if (isset($_SESSION["login"])) {
-    header("Location: ../index.php");
-    exit;
-}
+// if (isset($_SESSION["login"])) {
+//     header("Location: ../index.php");
+//     exit;
+// }
 
 require '../functions/connect_database.php';
 
@@ -22,6 +22,8 @@ if (isset($_POST["login"])) {
             // Set Session
             $_SESSION["login"] = "true";
             $_SESSION["username"] = $username;
+            $_SESSION["no_rm"] = $row["no_rm"];
+            $_SESSION["id"] = $row["id"];
             header("Location: ../pages/pasien/dashboard_pasien.php?username=$username");
             exit;
         }
